@@ -12,6 +12,21 @@ extra-source-files:
 dependencies:
   - base >= 4.7 && < 5
 
+default-extensions:
+  - DeriveGeneric
+  - DerivingVia
+  - NamedFieldPuns
+  - OverloadedStrings
+  - RecordWildCards
+
+ghc-options:
+  - -Wall
+  - -Wcompat
+  - -Wincomplete-record-updates
+  - -Wincomplete-uni-patterns
+  - -Wredundant-constraints
+  - -funbox-strict-fields
+
 executables:
   gswitch:
     source-dirs:
@@ -25,5 +40,8 @@ library:
   source-dirs:
     - src
   dependencies:
+    - aeson
+    - deriving-aeson
+    - lens
     - servant
     - servant-client

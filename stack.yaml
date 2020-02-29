@@ -1,4 +1,6 @@
 resolver: lts-14.27
 
 packages:
-- .
+  - .
+extra-deps:
+  - 'deriving-aeson-0.1.2'

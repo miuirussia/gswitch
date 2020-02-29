@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 3cc2b1c0bc3dc51180816b61f362a00f5fd1448e20ce247db1c4ea088db8e615
+-- hash: 103b76f2dfc9349692bb89bb3295e16a09a402cf48f3a382fb726fbda1bf28b3
 
 name:           gswitch
 version:        0.1.0.0
@@ -19,12 +19,31 @@ build-type:     Simple
 extra-source-files:
     README.md
 
+library
+  other-modules:
+      Paths_gswitch
+  hs-source-dirs:
+      src
+  default-extensions: DeriveGeneric DerivingVia NamedFieldPuns OverloadedStrings RecordWildCards
+  ghc-options: -Wall -Wcompat -Wincomplete-record-updates -Wincomplete-uni-patterns -Wredundant-constraints -funbox-strict-fields
+  build-depends:
+      aeson
+    , base >=4.7 && <5
+    , deriving-aeson
+    , lens
+    , servant
+    , servant-client
+  default-language: Haskell2010
+
 executable gswitch
   main-is: Main.hs
   other-modules:
       Paths_gswitch
   hs-source-dirs:
-      src
+      app
+  default-extensions: DeriveGeneric DerivingVia NamedFieldPuns OverloadedStrings RecordWildCards
+  ghc-options: -Wall -Wcompat -Wincomplete-record-updates -Wincomplete-uni-patterns -Wredundant-constraints -funbox-strict-fields
   build-depends:
       base >=4.7 && <5
+    , gswitch
   default-language: Haskell2010
