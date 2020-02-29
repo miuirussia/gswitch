@@ -1,10 +1,10 @@
-cabal-version: 1.24
+cabal-version: 1.12
 
 -- This file has been generated from package.yaml by hpack version 0.33.0.
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 0cd997a168159e774de74cf3662a1857099a3a6da4fc8b7a2906115de74f943d
+-- hash: 8bcaafaa9eab06d9595068e6c57295d5477d137f430ac61e9106b48ec4df1050
 
 name:           gswitch
 version:        0.1.0.0
@@ -15,18 +15,14 @@ maintainer:     kirill.desirehd@gmail.com
 copyright:      (C) 2020 Kirill Kuznetsov
 license:        MIT
 license-file:   LICENSE
-build-type:     Custom
+build-type:     Simple
 extra-source-files:
     README.md
-
-custom-setup
-  setup-depends:
-      Cabal
-    , base
 
 library
   exposed-modules:
       Api.GitLab
+      Config.Env
   other-modules:
       Paths_gswitch
   hs-source-dirs:
