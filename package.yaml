@@ -1,0 +1,29 @@
+name:                gswitch
+version:             0.1.0.0
+homepage:            https://github.com/miuirussia/gswitch#readme
+license:             MIT
+author:              Kirill Kuznetsov
+maintainer:          kirill.desirehd@gmail.com
+copyright:           (C) 2020 Kirill Kuznetsov
+category:            Web
+extra-source-files:
+- README.md
+
+dependencies:
+  - base >= 4.7 && < 5
+
+executables:
+  gswitch:
+    source-dirs:
+      - app
+    main:
+      Main.hs
+    dependencies:
+      - gswitch
+
+library:
+  source-dirs:
+    - src
+  dependencies:
+    - servant
+    - servant-client
