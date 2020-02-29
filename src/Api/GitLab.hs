@@ -17,6 +17,7 @@ import Data.Proxy
 import Data.Text
 
 import Servant.API
+import Servant.API.Flatten
 import Servant.Client
 
 newtype Branch = Branch { unBranch :: Text }
@@ -100,21 +101,6 @@ data MergeRequestResponse = MergeRequestResponse
   deriving Generic
   deriving FromJSON via CustomJSON '[FieldLabelModifier (StripPrefix "mergeRequest", CamelToSnake)] MergeRequestResponse
 
-
-type API =
-          ("projects" :> Capture "id" Text :> "issues" :> Capture "issue_iid" Int :> Get '[JSON] IssueResponse)
-     :<|> ("projects" :> Capture "id" Text :> "repository" :> "branches" :> ReqBody '[JSON] BranchCreateRequest :> Post '[JSON] BranchResponse)
-     :<|> ("projects" :> Capture "id" Text :> "merge_requests" :> ReqBody '[JSON] MergeRequestRequest :> Post '[JSON] MergeRequestResponse)
-
-api :: Proxy API
-api = Proxy
-
-getIssueInfo :: Text -> Int -> ClientM IssueResponse
-createBranch :: Text -> BranchCreateRequest -> ClientM BranchResponse
-createMergeRequest :: Text -> MergeRequestRequest -> ClientM MergeRequestResponse
-
-getIssueInfo :<|> createBranch :<|> createMergeRequest = client api
-
 createMergeRequestReq :: Branch -> Branch -> Text -> Text -> MergeRequestRequest
 createMergeRequestReq sourceBranch targetBranch title description = MergeRequestRequest
   { mrRequestSourceBranch = sourceBranch
@@ -132,3 +118,17 @@ createMergeRequestReq sourceBranch targetBranch title description = MergeRequest
   , mrRequestSquash = Nothing
   }
 
+type PrivateApi = ("issues" :> Capture "issue_iid" Int :> Get '[JSON] IssueResponse)
+             :<|> ("repository" :> "branches" :> ReqBody '[JSON] BranchCreateRequest :> Post '[JSON] BranchResponse)
+             :<|> ("merge_requests" :> ReqBody '[JSON] MergeRequestRequest :> Post '[JSON] MergeRequestResponse)
+
+type API = Header "PRIVATE-TOKEN" Text :> "projects" :> Capture "id" Text :> PrivateApi
+
+api :: Proxy API
+api = Proxy
+
+getIssueInfo :: Maybe Text -> Text -> Int -> ClientM IssueResponse
+createBranch :: Maybe Text -> Text -> BranchCreateRequest -> ClientM BranchResponse
+createMergeRequest :: Maybe Text -> Text -> MergeRequestRequest -> ClientM MergeRequestResponse
+
+getIssueInfo :<|> createBranch :<|> createMergeRequest = client (flatten api)

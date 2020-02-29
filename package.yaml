@@ -51,4 +51,5 @@ library:
     - lens
     - servant
     - servant-client
+    - servant-flatten
     - text

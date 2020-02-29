@@ -4,7 +4,7 @@ cabal-version: 1.24
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 466ce8e75c7e34604063d210208d6967c25d1d804f8e96ad4ea923952958e80f
+-- hash: a12283761ff7e23a49a50124b3433f260264120fbf924a937aaf5d5ae95f08db
 
 name:           gswitch
 version:        0.1.0.0
@@ -41,6 +41,7 @@ library
     , lens
     , servant
     , servant-client
+    , servant-flatten
     , text
   default-language: Haskell2010
 
