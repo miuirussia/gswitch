@@ -1,20 +1,18 @@
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE FunctionalDependencies #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE TypeOperators #-}
-module Api.GitLab ( Branch(..)
-                  , Ref (..)
-                  , BranchCreateRequest (..)
-                  , MergeRequestRequest (..)
-                  , getIssueInfo
-                  , createBranch
-                  , createMergeRequest
-                  , createMergeRequestReq
-                  ) where
+
+module Api.GitLab where
 
 import Data.Aeson
 import Deriving.Aeson
 import Data.Proxy
 import Data.Text
+import Control.Lens (makeFields)
 
 import Servant.API
 import Servant.API.Flatten
@@ -23,7 +21,9 @@ import Servant.Client
 newtype Branch = Branch { unBranch :: Text }
   deriving (Show, Generic)
 
-instance FromJSON Branch
+instance FromJSON Branch where
+  parseJSON = withText "Branch" $ \t -> do
+    pure (Branch t)
 
 instance ToJSON Branch where
   toJSON =
@@ -31,11 +31,12 @@ instance ToJSON Branch where
   toEncoding =
     toEncoding . unBranch
 
-
 newtype Ref = Ref { unRef :: Text }
   deriving (Show, Generic)
 
-instance FromJSON Ref
+instance FromJSON Ref where
+  parseJSON = withText "Ref" $ \t -> do
+    pure (Ref t)
 
 instance ToJSON Ref where
   toJSON =
@@ -44,91 +45,101 @@ instance ToJSON Ref where
     toEncoding . unRef
 
 data BranchCreateRequest = BranchCreateRequest
-  { bcRequestBranch :: Branch
-  , bcRequestRef    :: Ref
+  { _branchCreateRequestBranch :: Branch
+  , _branchCreateRequestRef    :: Ref
   }
-  deriving Generic
-  deriving ToJSON via CustomJSON '[FieldLabelModifier (StripPrefix "bcRequest", CamelToSnake)] BranchCreateRequest
+  deriving (Show, Generic)
+  deriving ToJSON via CustomJSON '[FieldLabelModifier (StripPrefix "_branchCreateRequest", CamelToSnake)] BranchCreateRequest
+
+makeFields ''BranchCreateRequest
 
 data MergeRequestRequest = MergeRequestRequest
-  { mrRequestSourceBranch          :: Branch
-  , mrRequestTargetBranch          :: Branch
-  , mrRequestTitle                 :: Text
-  , mrRequestAssigneeId            :: Maybe Int
-  , mrRequestAssigneeIds           :: Maybe [Int]
-  , mrRequestDescription           :: Maybe Text
-  , mrRequestTargetProjectId       :: Maybe Int
-  , mrRequestLabels                :: Maybe Text
-  , mrRequestMilestoneId           :: Maybe Text
-  , mrRequestRemoveSourceBranch    :: Maybe Bool
-  , mrRequestAllowCollaboration    :: Maybe Bool
-  , mrRequestAllowMaintainerToPush :: Maybe Bool
-  , mrRequestSquash                :: Maybe Bool
+  { _mergeRequestRequestSourceBranch          :: Branch
+  , _mergeRequestRequestTargetBranch          :: Branch
+  , _mergeRequestRequestTitle                 :: Text
+  , _mergeRequestRequestAssigneeId            :: Maybe Int
+  , _mergeRequestRequestAssigneeIds           :: Maybe [Int]
+  , _mergeRequestRequestDescription           :: Maybe Text
+  , _mergeRequestRequestTargetProjectId       :: Maybe Int
+  , _mergeRequestRequestLabels                :: Maybe Text
+  , _mergeRequestRequestMilestoneId           :: Maybe Text
+  , _mergeRequestRequestRemoveSourceBranch    :: Maybe Bool
+  , _mergeRequestRequestAllowCollaboration    :: Maybe Bool
+  , _mergeRequestRequestAllowMaintainerToPush :: Maybe Bool
+  , _mergeRequestRequestSquash                :: Maybe Bool
   }
-  deriving Generic
-  deriving ToJSON via CustomJSON '[OmitNothingFields, FieldLabelModifier (StripPrefix "mrRequest", CamelToSnake)] MergeRequestRequest
+  deriving (Show, Generic)
+  deriving ToJSON via CustomJSON '[OmitNothingFields, FieldLabelModifier (StripPrefix "_mergeRequestRequest", CamelToSnake)] MergeRequestRequest
+
+makeFields ''MergeRequestRequest
 
 data IssueResponse = IssueResponse
-  { iResponseId :: Int
-  , iResponseTitle :: Text
+  { _issueResponseId :: Int
+  , _issueResponseTitle :: Text
   } deriving (Show, Generic)
+
+makeFields ''IssueResponse
 
 instance FromJSON IssueResponse where
   parseJSON = withObject "IssueResponse" $ \o -> do
-    iResponseId <- o .: "iid"
-    iResponseTitle <- o .: "title"
+    _issueResponseId <- o .: "iid"
+    _issueResponseTitle <- o .: "title"
     pure IssueResponse { .. }
 
 data BranchResponse = BranchResponse
-  { bResponseName     :: Branch
-  , bResponseCommitId :: Ref
-  }
+  { _branchResponseName     :: Branch
+  , _branchResponseCommitId :: Ref
+  } deriving (Show, Generic)
+
+makeFields ''BranchResponse
 
 instance FromJSON BranchResponse where
   parseJSON = withObject "BranchResponse" $ \o -> do
-    bResponseName <- o .: "name"
+    _branchResponseName <- o .: "name"
     commit <- o .: "commit"
-    bResponseCommitId <- commit .: "id"
+    _branchResponseCommitId <- commit .: "id"
     pure BranchResponse { .. }
 
 data MergeRequestResponse = MergeRequestResponse
-  { mrResponseId           :: Int
-  , mrResponseTitle        :: Int
-  , mrResponseDescription  :: Text
-  , mrResponseTargetBranch :: Branch
-  , mrResponseSourceBranch :: Branch
+  { _mergeRequestResponseId           :: Int
+  , _mergeRequestResponseTitle        :: Int
+  , _mergeRequestResponseDescription  :: Text
+  , _mergeRequestResponseTargetBranch :: Branch
+  , _mergeRequestResponseSourceBranch :: Branch
   }
-  deriving Generic
+  deriving (Show, Generic)
   deriving FromJSON via CustomJSON '[FieldLabelModifier (StripPrefix "mergeRequest", CamelToSnake)] MergeRequestResponse
 
+makeFields ''MergeRequestResponse
+
 createMergeRequestReq :: Branch -> Branch -> Text -> Text -> MergeRequestRequest
-createMergeRequestReq sourceBranch targetBranch title description = MergeRequestRequest
-  { mrRequestSourceBranch = sourceBranch
-  , mrRequestTargetBranch = targetBranch
-  , mrRequestTitle = title
-  , mrRequestDescription = Just description
-  , mrRequestAssigneeId = Nothing
-  , mrRequestAssigneeIds = Nothing
-  , mrRequestTargetProjectId = Nothing
-  , mrRequestLabels = Nothing
-  , mrRequestMilestoneId = Nothing
-  , mrRequestRemoveSourceBranch = Just True
-  , mrRequestAllowCollaboration = Nothing
-  , mrRequestAllowMaintainerToPush = Nothing
-  , mrRequestSquash = Nothing
+createMergeRequestReq a b c d = MergeRequestRequest
+  { _mergeRequestRequestSourceBranch = a
+  , _mergeRequestRequestTargetBranch = b
+  , _mergeRequestRequestTitle = c
+  , _mergeRequestRequestDescription = Just d
+  , _mergeRequestRequestAssigneeId = Nothing
+  , _mergeRequestRequestAssigneeIds = Nothing
+  , _mergeRequestRequestTargetProjectId = Nothing
+  , _mergeRequestRequestLabels = Nothing
+  , _mergeRequestRequestMilestoneId = Nothing
+  , _mergeRequestRequestRemoveSourceBranch = Just True
+  , _mergeRequestRequestAllowCollaboration = Nothing
+  , _mergeRequestRequestAllowMaintainerToPush = Nothing
+  , _mergeRequestRequestSquash = Nothing
   }
 
 type PrivateApi = ("issues" :> Capture "issue_iid" Int :> Get '[JSON] IssueResponse)
              :<|> ("repository" :> "branches" :> ReqBody '[JSON] BranchCreateRequest :> Post '[JSON] BranchResponse)
              :<|> ("merge_requests" :> ReqBody '[JSON] MergeRequestRequest :> Post '[JSON] MergeRequestResponse)
 
-type API = Header "PRIVATE-TOKEN" Text :> "projects" :> Capture "id" Text :> PrivateApi
+type API = Header "PRIVATE-TOKEN" Text :> "projects" :> Capture "id" Int :> PrivateApi
 
 api :: Proxy API
 api = Proxy
 
-getIssueInfo :: Maybe Text -> Text -> Int -> ClientM IssueResponse
-createBranch :: Maybe Text -> Text -> BranchCreateRequest -> ClientM BranchResponse
-createMergeRequest :: Maybe Text -> Text -> MergeRequestRequest -> ClientM MergeRequestResponse
+getIssueInfo :: Maybe Text -> Int -> Int -> ClientM IssueResponse
+createBranch :: Maybe Text -> Int -> BranchCreateRequest -> ClientM BranchResponse
+createMergeRequest :: Maybe Text -> Int -> MergeRequestRequest -> ClientM MergeRequestResponse
 
 getIssueInfo :<|> createBranch :<|> createMergeRequest = client (flatten api)

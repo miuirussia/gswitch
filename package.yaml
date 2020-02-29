@@ -48,6 +48,7 @@ library:
     - aeson
     - deriving-aeson
     - http-client
+    - http-client-tls
     - lens
     - servant
     - servant-client
