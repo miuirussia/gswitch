@@ -9,11 +9,6 @@ category:            Web
 extra-source-files:
 - README.md
 
-custom-setup:
-  dependencies:
-    - base
-    - Cabal
-
 dependencies:
   - base >= 4.7 && < 5
 
@@ -47,9 +42,11 @@ library:
   dependencies:
     - aeson
     - deriving-aeson
+    - envparse
     - http-client
     - http-client-tls
     - lens
+    - optparse-applicative
     - servant
     - servant-client
     - servant-flatten

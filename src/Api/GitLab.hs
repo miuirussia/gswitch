@@ -102,13 +102,13 @@ instance FromJSON BranchResponse where
 
 data MergeRequestResponse = MergeRequestResponse
   { _mergeRequestResponseId           :: Int
-  , _mergeRequestResponseTitle        :: Int
+  , _mergeRequestResponseTitle        :: Text
   , _mergeRequestResponseDescription  :: Text
   , _mergeRequestResponseTargetBranch :: Branch
   , _mergeRequestResponseSourceBranch :: Branch
   }
   deriving (Show, Generic)
-  deriving FromJSON via CustomJSON '[FieldLabelModifier (StripPrefix "mergeRequest", CamelToSnake)] MergeRequestResponse
+  deriving FromJSON via CustomJSON '[FieldLabelModifier (StripPrefix "_mergeRequestResponse", CamelToSnake)] MergeRequestResponse
 
 makeFields ''MergeRequestResponse
 

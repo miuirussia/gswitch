@@ -4,4 +4,5 @@ packages:
   - .
 extra-deps:
   - 'deriving-aeson-0.1.2'
+  - 'envparse-0.4.1'
   - 'servant-flatten-0.2'

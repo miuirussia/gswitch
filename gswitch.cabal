@@ -4,7 +4,7 @@ cabal-version: 1.24
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 5fb46bb7e1aa35f6b9e79822c83a164ca6bc3db59b52791694844dcff894aa39
+-- hash: 0cd997a168159e774de74cf3662a1857099a3a6da4fc8b7a2906115de74f943d
 
 name:           gswitch
 version:        0.1.0.0
@@ -37,9 +37,11 @@ library
       aeson
     , base >=4.7 && <5
     , deriving-aeson
+    , envparse
     , http-client
     , http-client-tls
     , lens
+    , optparse-applicative
     , servant
     , servant-client
     , servant-flatten

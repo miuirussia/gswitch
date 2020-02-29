@@ -67,12 +67,18 @@ in { system, compiler, flags, pkgs, hsPkgs, pkgconfPkgs, ... }:
           (hsPkgs."aeson" or (buildDepError "aeson"))
           (hsPkgs."base" or (buildDepError "base"))
           (hsPkgs."deriving-aeson" or (buildDepError "deriving-aeson"))
+          (hsPkgs."envparse" or (buildDepError "envparse"))
+          (hsPkgs."http-client" or (buildDepError "http-client"))
+          (hsPkgs."http-client-tls" or (buildDepError "http-client-tls"))
           (hsPkgs."lens" or (buildDepError "lens"))
+          (hsPkgs."optparse-applicative" or (buildDepError "optparse-applicative"))
           (hsPkgs."servant" or (buildDepError "servant"))
           (hsPkgs."servant-client" or (buildDepError "servant-client"))
+          (hsPkgs."servant-flatten" or (buildDepError "servant-flatten"))
+          (hsPkgs."text" or (buildDepError "text"))
           ];
         buildable = true;
-        modules = [ "Paths_gswitch" ];
+        modules = [ "Paths_gswitch" "Api/GitLab" ];
         hsSourceDirs = [ "src" ];
         };
       exes = {
