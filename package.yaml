@@ -11,6 +11,17 @@ extra-source-files:
 
 dependencies:
   - base >= 4.7 && < 5
+  - aeson
+  - deriving-aeson
+  - envparse
+  - http-client
+  - http-client-tls
+  - lens
+  - optparse-applicative
+  - servant
+  - servant-client
+  - servant-flatten
+  - text
 
 default-extensions:
   - DeriveGeneric
@@ -39,15 +50,3 @@ executables:
 library:
   source-dirs:
     - src
-  dependencies:
-    - aeson
-    - deriving-aeson
-    - envparse
-    - http-client
-    - http-client-tls
-    - lens
-    - optparse-applicative
-    - servant
-    - servant-client
-    - servant-flatten
-    - text
