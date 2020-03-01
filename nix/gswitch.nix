@@ -78,7 +78,7 @@ in { system, compiler, flags, pkgs, hsPkgs, pkgconfPkgs, ... }:
           (hsPkgs."text" or (buildDepError "text"))
           ];
         buildable = true;
-        modules = [ "Paths_gswitch" "Api/GitLab" ];
+        modules = [ "Paths_gswitch" "Api/GitLab" "Config/Env" ];
         hsSourceDirs = [ "src" ];
         };
       exes = {
