@@ -1,0 +1,20 @@
+name: Build
+
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: macos
+
+    steps:
+    - uses: actions/checkout@v2
+    - uses: './.github/actions/nix'
+    - name: Build derivation
+      run: |
+        ls ~/.nix-profile/etc/
+        echo "$NIX_SSL_CERT_FILE"
+        nix build -f ./nix/default.nix gswitch.components.exes.gswitch
